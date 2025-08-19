@@ -41,8 +41,16 @@
             - Read Repair
             - Anti-Entropy process
         - Problems with Replication Lag and gurantees provided by the datastore
-
     Partitioning
+        - Partitioning by Key Range
+        - Partitioning by Hash of Key
+        - Secondary Key can be partitioned using 2 methods
+            - Document-partitioned indexes(local indexes)
+                - This will be within the same partition
+                - This would require parallel queries to all partitions as this index is present with in the primary partition
+            - Term-Partitioned indexes (global indexs)
+                - Global outside of these partitions
+                - This require finding all the partition that the primary index is in for given secondary index and then querying those partitions
 
     Transactions
 
