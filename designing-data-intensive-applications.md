@@ -51,8 +51,51 @@
             - Term-Partitioned indexes (global indexs)
                 - Global outside of these partitions
                 - This require finding all the partition that the primary index is in for given secondary index and then querying those partitions
-
     Transactions
+        - DB Locking
+| Lock Type       | Another Shared Lock | Another Exclusive Lock |
+|-----------------|---------------------|-------------------------|
+| **Shared Lock** | YES                 | NO                      |
+| **Exclusive Lock** | NO              | NO                      |
+
+
+        - Isolation Level
+
+| Isolation Level | Dirty Reads Prevented | Non-Repeatable Reads Prevented | Phantom Reads Prevented | Notes |
+|-----------------|------------------------|--------------------------------|--------------------------|-------|
+| **Read Uncommitted** | ❌ | ❌ | ❌ | Lowest isolation, allows dirty reads. |
+| **Read Committed**   | ✅ | ❌ | ❌ | Most common default (e.g., Oracle, SQL Server). |
+| **Repeatable Read**  | ✅ | ✅ | ❌ | Prevents dirty & non-repeatable reads, but phantoms can still occur. |
+| **Serializable**     | ✅ | ✅ | ✅ | Strictest level. Transactions behave as if executed sequentially. |
+| **Snapshot** (MVCC)  | ✅ | ✅ | ✅ (in many DBs) | Uses row versions instead of locks (Postgres default). No blocking reads. |
+        - Locking Strategy
+        # Isolation Levels and Locking Strategies
+
+| Isolation Level     | Locking Strategy |
+|---------------------|------------------|
+| **Read Uncommitted** | - Read: No Lock acquired |
+|                     | - Write: No Lock acquired |
+| **Read Committed**   | - Read: Shared Lock acquired and released as soon as Read is done |
+|                     | - Write: Exclusive lock acquired and release at the end of transaction |
+| **Repeatable Read**  | - Read: Shared lock acquired and release at the end of transaction |
+|                     | - Write: Exclusive lock acquired and release at the end of transaction |
+| **Serializable**     | Same as repeatable read with range locks as well and released at the end of transaction |
+ 
+        - Distributed Concurrency control
+            - Optimistic Concurrency control
+                - Isolation Level Read Committed
+            - Pessimistic Concurrency control
+                - Repeatable or Serializable
+        - Two Phase Locking
+            - Growing Phase - Acquiring Locks
+            - Shrinking Phase - Releasing Locks
+            - Types of 2 Phase Locking
+                - Basic
+                    - Releasing locks even before the transaction is completed i.e. COMMIT or ROLLBACK
+                - Conservative
+                    - Acquire all locks at once at start of transaction
+                - Strict or Rigorous (Mostly used in the industry)
+                    - Gradually acquire locks and release all the locks at end of transaction i.e. COMMIT or ROLLBACK
 
     Trouble with Distributed Systems
 
